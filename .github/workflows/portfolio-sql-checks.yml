@@ -1,0 +1,39 @@
+name: Portfolio SQL checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+      - name: Run setup, models, and data-quality assertions
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql --host localhost --username postgres --dbname postgres --set ON_ERROR_STOP=1 --file portfolio/01_setup.sql
+          psql --host localhost --username postgres --dbname postgres --set ON_ERROR_STOP=1 --file portfolio/02_models.sql
+          psql --host localhost --username postgres --dbname postgres --set ON_ERROR_STOP=1 --file portfolio/03_data_quality_tests.sql

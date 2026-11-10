@@ -1,5 +1,7 @@
 # Campaign Conversion Analytics
 
+[![Portfolio SQL checks](https://github.com/s6farrer-blip/campaign-conversion-analytics/actions/workflows/portfolio-sql-checks.yml/badge.svg)](https://github.com/s6farrer-blip/campaign-conversion-analytics/actions/workflows/portfolio-sql-checks.yml)
+
 A portfolio project demonstrating SQL-first analytics engineering with PostgreSQL. It uses synthetic customer and campaign-conversion data to build tested, reusable models for campaign reporting.
 
 ## Business questions
@@ -40,6 +42,8 @@ psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f portfolio/03_data_quality_tests.sql
 
 In VS Code with SQLTools, connect to a development database, open each script, and run them in the same order. The setup script creates a dedicated `portfolio_acquisition` schema rather than using `public`. Do not run portfolio experiments against a production database.
 
+GitHub Actions runs these scripts against PostgreSQL 16 on pushes and pull requests to `main`.
+
 Example report query:
 
 ```sql
@@ -60,4 +64,4 @@ ORDER BY month, campaign_name, ad_platform;
 
 - Add a dashboard backed by the monthly mart and document the intended audience and decisions it supports.
 - Expand the fixture to cover refunds, missing campaign values, and late-arriving events.
-- Add dbt project structure and automated CI checks if the project grows beyond these standalone SQL models.
+- Move the models into a dbt project if the project grows beyond these standalone SQL scripts.
